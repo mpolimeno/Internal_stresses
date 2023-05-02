@@ -1,0 +1,1 @@
+This directory will contain the Python implementation of the relevant routines to compute internal stresses, including the parallelization of the building of the matrices to be inverted to solve the relevant linear system
