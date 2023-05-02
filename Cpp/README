@@ -1,1 +1,35 @@
-This directory contains the codes written in C++ to compute internal stresses in fractal aggregates subject to a background flow
+# This directory contains some sample codes to test an OOP implementation of DLA
+
+### SIMPLE PITCHFORK LAYOUT #######
+It follows the idea of the "out-of-source build/", so that we build the executables not under source. It makes for cleaner designs. When you want a fresh compilation, simply delete the build/ directory, and then recreate it.
+
+# Note that it does not include an include/ (or lib/) directory, nor a tst/ one, since the purpose of this directory is to get people familiar with the Cmake build system, and C++ standard syntax.
+
+Here are the first two levels of the project tree (i.e. structure/layout of the project) before the code is built
+### <root>
+        |- src/
+            |- CMakeLists.txt main_driver.cc funcs.cc randomwalk.h
+        |- build/
+
+######### HOW TO COMPILE AND RUN THIS ROUTINE ############
+
+######### COMPILE ##################
+#### Let us get familiar with the project first:
+# Type 'cd src/'
+# In src/ you will find a 'CMakeLists.txt' file. Here is where we specify the project name and related flags for compilation. It is useful to open this file with your favorite editor and get familiar with the syntax, but you do not have to modify it.
+# You will also find a 'main_driver.cc' and a 'funcs.cc' file, where the C++ code is written, and a headerfile 'randomwalk.h' for function declarations and global parameters
+
+#### Now onto the compilation process: 
+# Type 'cd ..' to get back to your <root>
+# Type 'cd build/'
+# Once in 'build/', type 'cmake -S ../src/' to generate a 'Makefile' (it will generate other files too, but do not worry about it)
+# You can open the 'Makefile' with your favorite editor if you want to see what it is about. Otherwise, skip to the next line
+# Type 'make' to generate the executable (in this case named 'DLA')
+# Type 'ls' to verify that the executable is there
+
+######### RUN #####################
+# Now, to execute the routine,  type './executable name  seed_number  outputfile'
+# For instance: './DLA 3 res.txt' (without the single quotes at the beginning or the end)
+# This will print out the output to a file called 'res.txt'
+# Type 'ls' to verify that the file is there
+# Type 'cat res.txt' to see the file's contents. It will contain the position of each cube in the aggregate that was built, in form of a  1x3 vectors of integers.
