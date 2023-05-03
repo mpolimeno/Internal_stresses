@@ -64,7 +64,7 @@ int main(int argc,char* argv[]) {
     
     // Check step-size restrictions
     if (DX!=DY||DX!=DZ||DY!=DZ) {
-        printf("ERROR: currently only DX=DY=DZ supported\n");
+        std::cout << "ERROR: currently only DX=DY=DZ supported" << std::endl;
         exit(0);
     }
     
@@ -72,20 +72,20 @@ int main(int argc,char* argv[]) {
     const int kDimension = 3;
     // Check dimensionality restrictions
     if (kDimension!=3) {
-        printf("ERROR: currently only kDimension=3 supported\n");
+        std::cout << "ERROR: currently only kDimension=3 supported" << std::endl;
         exit(0);
     }
     const int kNumberOfCubes = 15;
     int CubesInOneAggregate;
     
     // Define variable for center of mass of aggregate
-    double* com = new double[kDimension];
+    double* center_of_mass = new double[kDimension];
     
     // First instance of the class
-    Aggregate agg(kNumberOfCubes,CubesInOneAggregate,kDimension,com);
+    Aggregate agg(kNumberOfCubes,CubesInOneAggregate,kDimension,center_of_mass);
 
     // Set center of mass of aggregate
-    agg.SetCenterOfMass(kDimension,com);
+    agg.SetCenterOfMass(kDimension,center_of_mass);
     
     // Deal with args
     for (int i=0;i<argc;i++) printf("** argv[%d]: %s\n",i,argv[i]);
@@ -117,11 +117,11 @@ int main(int argc,char* argv[]) {
 
     // Call function for DLA routine to build aggregate
     BuildAggregate(kNumberOfCubes,kDimension,aggregate_position); 
-    //BuildAggregate(kNumberOfCubes,kDimension,aggregate_position,com); 
+    //BuildAggregate(kNumberOfCubes,kDimension,aggregate_position,center_of_mass); 
 
     // Compute center of mass of aggregate and print it out
-    agg.ComputeFinalCenterOfMass(kDimension,kNumberOfCubes,aggregate_position,com);
-    for (int d=0;d<kDimension;d++) std::cout << *(com+d) << " ";
+    agg.ComputeFinalCenterOfMass(kDimension,kNumberOfCubes,aggregate_position,center_of_mass);
+    for (int d=0;d<kDimension;d++) std::cout << *(center_of_mass+d) << " ";
     std::cout << "\n";
 
     // Print position of each cube in the aggregate to a file
@@ -131,6 +131,7 @@ int main(int argc,char* argv[]) {
 
     // Deallocate memory of array that stores final position of cubes in aggregate
     delete[] aggregate_position;
+    delete[] center_of_mass;
 
     return 0;
 }
