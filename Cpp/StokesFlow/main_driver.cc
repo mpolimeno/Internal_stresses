@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdbool>
 #include <fstream> // To use ifstream and read files
+#include "funcs.h"
 
 // DRIVER
 int main(int argc, char* argv[]) {
@@ -42,7 +43,26 @@ int main(int argc, char* argv[]) {
     
     while (count_direction<kNumberOfFaces && NormalDirection >> *(direction_of_normal+count_direction)) count_direction++;
     NormalDirection.close();
-    
+
+    // Build SL Matrix
+    double* SingleLayerMatrix = new double[kDimension*kDimension];
+    for (int i=0;i<count_direction;i++) {
+        int* x_s          = new int[kDimension];
+        int* current_face = new int[kDimension];
+        *(x_s+i) = *(evaluation_point+i);
+        *(current_face) = *(center_of_face+i);
+        int n_hat = *(direction_of_normal+i);    
+        for (int j=0;j<kDimension;j++) {
+            for (int k=0;k<kDimension;k++) *(SingleLayerMatrix+j*kDimension+k) = 0.;
+        }
+        BuildMatrixForSingleLayerPotential(current_face,kNumberOfFaces,x_s,kDimension,n_hat,SingleLayerMatrix);
+        for (int m=0;m<kDimension;m++) {
+            for (int n=0;n<kDimension;n++) std::cout << *(SingleLayerMatrix+m*kDimension+n) << " ";
+            std::cout << "\n";
+        }
+        std::cout << "\n";
+    }
+
     // Display Face Centers
     for (int i=0;i<kNumberOfFaces;i++) {
         for (int j=0;j<kDimension;j++) std::cout << *(center_of_face+i*kDimension+j) << " ";
@@ -64,6 +84,7 @@ int main(int argc, char* argv[]) {
     delete[] center_of_face;
     delete[] evaluation_point;
     delete[] direction_of_normal;
+    delete[] SingleLayerMatrix;
 
     return 0;
 }
