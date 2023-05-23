@@ -250,6 +250,66 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
                 }
                 *(xx_ij+i*kDimension+j) = px1 - px2 - px3 + px4;
             }
+            if (i!=j && i!=(normal_direction-1) && j==(normal_direction-1)) {
+                double x_s = *(current_position+i);
+                int ys_index = 5-normal_direction-1-i;
+                double y_s = *(current_position+ys_index);
+                int n_dir = normal_direction - 1;
+                double z_s = *(current_position+n_dir);
+
+                double z = 0.;
+
+                if (rint(z)!=rint(z_s)) {
+                px1 =  -log(sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)  + (1-y_s)*(1-y_s)) + (1-y_s));
+                px2 =  log(sqrt((z-z_s)*(z-z_s) + (1+x_s)*(1+x_s)  + (1-y_s)*(1-y_s)) + (1-y_s));
+                px3 =  log(sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)  + (-1-y_s)*(-1-y_s)) + (-1-y_s));
+                px4 =  -log(sqrt((z-z_s)*(z-z_s) + (1+x_s)*(1+x_s)  + (-1-y_s)*(-1-y_s)) + (-1-y_s));
+
+                } else {
+                    px1 = 0.;
+                    px2 = 0.;
+                    px3 = 0.;
+                    px4 = 0.;
+                }
+                *(xx_ij+i*kDimension+j) = (z-z_s)*(px1 + px2 + px3 + px4);
+            }
+            if (i!=j && j!=(normal_direction-1) && i==(normal_direction-1)) {
+                double x_s = *(current_position+j);
+                int ys_index = 5-normal_direction-1-j;
+                double y_s = *(current_position+ys_index);
+                int n_dir = normal_direction - 1;
+                double z_s = *(current_position+n_dir);
+
+                double z = 0.;
+
+                if (rint(z)!=rint(z_s)) {
+                px1 =  -log(sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)  + (1-y_s)*(1-y_s)) + (1-y_s));
+                px2 =  log(sqrt((z-z_s)*(z-z_s) + (1+x_s)*(1+x_s)  + (1-y_s)*(1-y_s)) + (1-y_s));
+                px3 =  log(sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)  + (-1-y_s)*(-1-y_s)) + (-1-y_s));
+                px4 =  -log(sqrt((z-z_s)*(z-z_s) + (1+x_s)*(1+x_s)  + (-1-y_s)*(-1-y_s)) + (-1-y_s)); 
+                } else {
+                    px1 = 0.;
+                    px2 = 0.;
+                    px3 = 0.;
+                    px4 = 0.;
+                }
+                *(xx_ij+i*kDimension+j) = (z-z_s)*(px1 + px2 + px3 + px4);
+            }
+            if (i!=j && j!=(normal_direction-1) && i!=(normal_direction-1)) {
+                double x_s = *(current_position+i);
+                double y_s = *(current_position+j);
+                int n_dir = normal_direction - 1;
+                double z_s = *(current_position+n_dir);
+
+                double z = 0.;
+
+                px1 = -sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s) + (1-y_s)*(1-y_s));
+                px2 = sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s) + (1+y_s)*(1+y_s));
+                px3 = sqrt((z-z_s)*(z-z_s) + (1+x_s)*(1+x_s) + (1-y_s)*(1-y_s));
+                px4 = -sqrt((z-z_s)*(z-z_s) + (1+x_s)*(1+x_s) + (1+y_s)*(1+y_s));
+                
+                *(xx_ij+i*kDimension+j) = px1 + px2 + px3 + px4;
+            }
         }
     }
     
