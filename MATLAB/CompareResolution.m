@@ -35,8 +35,7 @@ if res==1
     else
         cm = mean(xc); % for multiple cubes
     end
-    xc = xc - cm;  % center of mass of aggregate is at origin
-    
+
     % Now compute where are the faces and what are their normals and orientations
     [finalposint, finalndir, finalori,Nf] = build_faces(xc, NC);
     % Nf is the number of faces
@@ -59,7 +58,6 @@ if res==2
     else
         cm = mean(xc); % for multiple cubes
     end
-    xc = xc - cm;
     
     % Now compute where are the faces and what are their normals and orientations
     [finalposint, finalndir, finalori,Nf] = build_faces(xc,NC);
