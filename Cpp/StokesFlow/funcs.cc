@@ -20,6 +20,7 @@ double ComputeEuclideanNorm(int* vector_x, int* vector_y) {
     for (int i=0;i<DIM;i++) {
         norm_squared += *(tmp+i);
     }
+    delete[] tmp;
 
     return norm_squared;
 }
@@ -33,6 +34,9 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
     for (int i=0;i<kDimension;i++) *(current_position+i) = *(evaluation_point+i) - *(center_of_face+i);
 
     double norm_squared = ComputeEuclideanNorm(evaluation_point,center_of_face);
+
+    std::cout << "Squared Norm is: " << norm_squared << std::endl;
+    std::cout << "\n";
 
     double* constant_ij = new double[kDimension*kDimension];
     double* xx_ij       = new double[kDimension*kDimension];
@@ -50,13 +54,20 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
                 if (i==j) {
                     int xs_index = ((normal_direction+1) % 3);
                     int ys_index = ((normal_direction+2) % 3);
-                    xs_index = (xs_index==0) ? 2 : xs_index;
-                    ys_index = (ys_index==0) ? 2 : ys_index;
+                    xs_index = (xs_index==0) ? 3 : xs_index;
+                    ys_index = (ys_index==0) ? 3 : ys_index;
                     
+                    xs_index = xs_index - 1;
+                    ys_index = ys_index - 1;
+
                     double x_s = *(current_position+xs_index);
                     double y_s = *(current_position+ys_index);
                     int n_dir = normal_direction - 1; // Indexing starts at 0
                     double z_s = *(current_position+n_dir);
+
+                    std::cout << x_s << std::endl;
+                    std::cout << y_s << std::endl;
+                    std::cout << z_s << std::endl;
 
                     double z = 0.;
 
@@ -145,9 +156,12 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
             if (i==j && i==(normal_direction-1)) {
                 int xs_index = ((normal_direction+1) % 3);
                 int ys_index = ((normal_direction+2) % 3);
-                xs_index = (xs_index==0) ? 2 : xs_index;
-                ys_index = (ys_index==0) ? 2 : ys_index;
+                xs_index = (xs_index==0) ? 3 : xs_index;
+                ys_index = (ys_index==0) ? 3 : ys_index;
                 
+                xs_index = xs_index - 1;
+                ys_index = ys_index - 1;
+
                 double x_s = *(current_position+xs_index);
                 double y_s = *(current_position+ys_index);
                 int n_dir = normal_direction - 1; // Indexing starts at 0
