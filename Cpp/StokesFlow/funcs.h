@@ -3,6 +3,6 @@
 
 extern void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces, int* evaluation_point, int kDimension, int normal_direction, double* SingleLayerMatrix);
 
-extern double ComputeEuclideanNorm(int* vector_x, int* vector_y);
+extern double ComputeEuclideanNorm(int* vector_x, int* vector_y, int kDimension);
 
 #endif

@@ -7,17 +7,16 @@
 #include "funcs.h"
 
 
-double ComputeEuclideanNorm(int* vector_x, int* vector_y) {
+double ComputeEuclideanNorm(int* vector_x, int* vector_y, int kDimension) {
     
-    int DIM = 3;
-    double* tmp = new double[DIM];
-    for (int i=0;i<DIM;i++) {
+    double* tmp = new double[kDimension];
+    for (int i=0;i<kDimension;i++) {
         *(tmp+i)  = *(vector_x+i) - *(vector_y+i);
         *(tmp+i) *= *(tmp+i);
     }
     
     double norm_squared = 0;
-    for (int i=0;i<DIM;i++) {
+    for (int i=0;i<kDimension;i++) {
         norm_squared += *(tmp+i);
     }
     delete[] tmp;
@@ -33,7 +32,7 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
     double* current_position = new double[kDimension];
     for (int i=0;i<kDimension;i++) *(current_position+i) = *(evaluation_point+i) - *(center_of_face+i);
 
-    double norm_squared = ComputeEuclideanNorm(evaluation_point,center_of_face);
+    double norm_squared = ComputeEuclideanNorm(evaluation_point,center_of_face,kDimension);
 
     double* constant_ij = new double[kDimension*kDimension];
     double* xx_ij       = new double[kDimension*kDimension];

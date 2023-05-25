@@ -8,14 +8,19 @@
 #include <chrono>
 #include "funcs.h"
 
+#define PI (4.*atan(1.))
+#define Nf 6
+
 using namespace std::chrono;
 
 // DRIVER
 int main(int argc, char* argv[]) {
     
     int kDimension = 3;
-    // Number of external faces
-    int kNumberOfFaces = 10;
+    // Number of external faces -> Eventually it would be better to have it in an input file
+    int kNumberOfFaces = Nf;
+    
+    double mu = 1.; // Non-dimensionalized Dynamic Viscosity 
 
     int* center_of_face      = new int[kNumberOfFaces*kDimension];
     int* evaluation_point    = new int[kDimension];
@@ -31,14 +36,6 @@ int main(int argc, char* argv[]) {
     while (count_face<kFaceCentersArraySize && FaceCenters >> *(center_of_face+count_face)) count_face++;
     FaceCenters.close();
 
-    // For integration point array
-    int count_integration = 0;
-    std::ifstream IntegrationPoint;
-    IntegrationPoint.open("IntegrationPoint.txt");
-    
-    while (count_integration<kDimension && IntegrationPoint >> *(evaluation_point+count_integration)) count_integration++;
-    IntegrationPoint.close();
-
     // For direction_of_normal array
     int count_direction = 0;
     std::ifstream NormalDirection;
@@ -47,7 +44,7 @@ int main(int argc, char* argv[]) {
     while (count_direction<kNumberOfFaces && NormalDirection >> *(direction_of_normal+count_direction)) count_direction++;
     NormalDirection.close();
 
-    int face_index = kNumberOfFaces-1;
+    int face_index = kDimension*kDimension;
     
     // Build LHS of Linear System
     auto start = high_resolution_clock::now();
@@ -63,7 +60,7 @@ int main(int argc, char* argv[]) {
     }
 
     int count = 1;
-    while (count<=10) {
+    while (count<=1) {
         for (int i=0;i<kNumberOfFaces;i++) {
             int* x_s = new int[kDimension];
             for (int j=0;j<kDimension;j++) {
@@ -87,7 +84,7 @@ int main(int argc, char* argv[]) {
                  
                 for (int j=0;j<kDimension;j++) {
                     for (int k=0;k<kDimension;k++) {
-                        *(LeftHandSide+i*kNumberOfFaces*face_index+f*face_index+j*kDimension+k) = *(SingleLayerMatrix+j*kDimension+k);
+                        *(LeftHandSide+i*kNumberOfFaces*face_index+f*face_index+j*kDimension+k) = (*(SingleLayerMatrix+j*kDimension+k)) * (1./(8.*PI*mu));
                     }
                 }
 
@@ -110,7 +107,7 @@ int main(int argc, char* argv[]) {
         for (int j=0;j<kNumberOfFaces;j++) {
             for (int m=0;m<kDimension;m++) {
                 for (int n=0;n<kDimension;n++) {
-                    std::cout << *(LeftHandSide+i*kNumberOfFaces*9+j*9+m*kDimension+n) << " ";
+                    std::cout << *(LeftHandSide+i*kNumberOfFaces*face_index+j*face_index+m*kDimension+n) << " ";
                 }
                 std::cout << "\n";
             }
@@ -119,6 +116,7 @@ int main(int argc, char* argv[]) {
         std::cout << "\n";
     }
     std::cout << "\n";
+    
 
     // Deallocate memory
     delete[] LeftHandSide;
