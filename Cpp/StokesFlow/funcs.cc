@@ -35,6 +35,9 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
 
     double norm_squared = ComputeEuclideanNorm(evaluation_point,center_of_face);
 
+    std::cout << "Squared Norm is: " << norm_squared << std::endl;
+    std::cout << "\n";
+
     double* constant_ij = new double[kDimension*kDimension];
     double* xx_ij       = new double[kDimension*kDimension];
     for (int i=0;i<kDimension;i++) {
@@ -61,6 +64,10 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
                     double y_s = *(current_position+ys_index);
                     int n_dir = normal_direction - 1; // Indexing starts at 0
                     double z_s = *(current_position+n_dir);
+
+                    std::cout << x_s << std::endl;
+                    std::cout << y_s << std::endl;
+                    std::cout << z_s << std::endl;
 
                     double z = 0.;
 
