@@ -5,14 +5,17 @@
 #include <cmath>
 #include <cstdbool>
 #include <fstream> // To use ifstream and read files
+#include <chrono>
 #include "funcs.h"
+
+using namespace std::chrono;
 
 // DRIVER
 int main(int argc, char* argv[]) {
     
     // Test for a single cube
     int kDimension = 3;
-    int kNumberOfFaces = 6;
+    int kNumberOfFaces = 10;
 
     int* center_of_face      = new int[kNumberOfFaces*kDimension];
     int* evaluation_point    = new int[kDimension];
@@ -44,39 +47,82 @@ int main(int argc, char* argv[]) {
     while (count_direction<kNumberOfFaces && NormalDirection >> *(direction_of_normal+count_direction)) count_direction++;
     NormalDirection.close();
 
-    // Build SL Matrix
-    double* SingleLayerMatrix = new double[kDimension*kDimension];
+    // Build LHS of Linear System
+    auto start = high_resolution_clock::now();
+    double* LeftHandSide = new double[900]; // LHS is 3*Number_of_Faces x 3*Number_of_Faces
     for (int i=0;i<kNumberOfFaces;i++) {
-        int* x_s          = new int[kDimension];
-        int* current_face = new int[kDimension];
-        
-        for (int j=0;j<kDimension;j++) {
-            *(x_s+j)          = *(evaluation_point+j);
-            *(current_face+j) = *(center_of_face+i*kDimension+j);
+        for (int j=0;j<kNumberOfFaces;j++) {
+            for (int m=0;m<kDimension;m++) {
+                for (int n=0;n<kDimension;n++) {
+                    *(LeftHandSide+i*kNumberOfFaces*9+j*9+m*kDimension+n) = 0.;
+                }
+            }
         }
+    }
 
-        std::cout << "Evaluation point is: " << "\n";
-        for (int j=0;j<kDimension;j++) std::cout << *(x_s+j) << " ";
-        std::cout << "\n";
+    int face_index = kNumberOfFaces-1;
+    int count = 1;
+    while (count<=1) {
+        for (int i=0;i<kNumberOfFaces;i++) {
+            int* x_s = new int[kDimension];
+            for (int j=0;j<kDimension;j++) {
+                *(x_s+j) = *(center_of_face+i*kDimension+j); // evaluation point
+            }
         
-        std::cout << "Current face is: " << "\n";
-        for (int j=0;j<kDimension;j++) std::cout << *(current_face+j) << " ";
-        std::cout << "\n";
+            for (int f=0;f<kNumberOfFaces;f++) {
+
+                int* current_face = new int[kDimension];
+                for (int g=0;g<kDimension;g++) *(current_face+g) = *(center_of_face+f*kDimension+g);
+                int n_hat = *(direction_of_normal+f);
         
-        int n_hat = *(direction_of_normal+i);
+                // Use Analytical Expressions for Single Layer Potential to build the matrix entries
+                double* SingleLayerMatrix = new double[kDimension*kDimension];
+                for (int j=0;j<kDimension;j++) {
+                    for (int k=0;k<kDimension;k++) *(SingleLayerMatrix+j*kDimension+k) = 0.;
+                }
+                BuildMatrixForSingleLayerPotential(current_face,kNumberOfFaces,x_s,kDimension,n_hat,SingleLayerMatrix);
         
-        for (int j=0;j<kDimension;j++) {
-            for (int k=0;k<kDimension;k++) *(SingleLayerMatrix+j*kDimension+k) = 0.;
+                delete[] current_face;
+                 
+                for (int j=0;j<kDimension;j++) {
+                    for (int k=0;k<kDimension;k++) {
+                        *(LeftHandSide+i*kNumberOfFaces*face_index+f*face_index+j*kDimension+k) = *(SingleLayerMatrix+j*kDimension+k);
+                        //std::cout << i*kNumberOfFaces*face_index+f*face_index+j*kDimension+k << std::endl;
+                        //std::cout << i*kNumberOfFaces*face_index << std::endl;
+                    }
+                }
+
+                delete[] SingleLayerMatrix;
+            }
+            delete[] x_s;
         }
-        BuildMatrixForSingleLayerPotential(current_face,kNumberOfFaces,x_s,kDimension,n_hat,SingleLayerMatrix);
-        
-        for (int m=0;m<kDimension;m++) {
-            for (int n=0;n<kDimension;n++) std::cout << *(SingleLayerMatrix+m*kDimension+n) << " ";
+        count++;
+    }
+    
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds> (stop - start);
+
+    std::cout << "Time to build Single Layer Matrices: " << duration.count()  << " microseconds" << std::endl;
+    
+    
+    std::cout << "Left-Hand Side is " << std::endl;
+    std::cout << "\n";
+    for (int i=0;i<kNumberOfFaces;i++) {
+        for (int j=0;j<kNumberOfFaces;j++) {
+            for (int m=0;m<kDimension;m++) {
+                for (int n=0;n<kDimension;n++) {
+                    std::cout << *(LeftHandSide+i*kNumberOfFaces*9+j*9+m*kDimension+n) << " ";
+                }
+                std::cout << "\n";
+            }
             std::cout << "\n";
         }
         std::cout << "\n";
     }
+    std::cout << "\n";
+    
 
+    delete[] LeftHandSide;
     /*
     // Display Face Centers
     for (int i=0;i<kNumberOfFaces;i++) {
@@ -100,7 +146,7 @@ int main(int argc, char* argv[]) {
     delete[] center_of_face;
     delete[] evaluation_point;
     delete[] direction_of_normal;
-    delete[] SingleLayerMatrix;
+    //delete[] SingleLayerMatrix;
 
     return 0;
 }

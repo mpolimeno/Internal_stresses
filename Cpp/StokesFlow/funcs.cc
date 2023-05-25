@@ -20,6 +20,7 @@ double ComputeEuclideanNorm(int* vector_x, int* vector_y) {
     for (int i=0;i<DIM;i++) {
         norm_squared += *(tmp+i);
     }
+    delete[] tmp;
 
     return norm_squared;
 }
@@ -50,9 +51,12 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
                 if (i==j) {
                     int xs_index = ((normal_direction+1) % 3);
                     int ys_index = ((normal_direction+2) % 3);
-                    xs_index = (xs_index==0) ? 2 : xs_index;
-                    ys_index = (ys_index==0) ? 2 : ys_index;
+                    xs_index = (xs_index==0) ? 3 : xs_index;
+                    ys_index = (ys_index==0) ? 3 : ys_index;
                     
+                    xs_index = xs_index - 1;
+                    ys_index = ys_index - 1;
+
                     double x_s = *(current_position+xs_index);
                     double y_s = *(current_position+ys_index);
                     int n_dir = normal_direction - 1; // Indexing starts at 0
@@ -145,9 +149,12 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
             if (i==j && i==(normal_direction-1)) {
                 int xs_index = ((normal_direction+1) % 3);
                 int ys_index = ((normal_direction+2) % 3);
-                xs_index = (xs_index==0) ? 2 : xs_index;
-                ys_index = (ys_index==0) ? 2 : ys_index;
+                xs_index = (xs_index==0) ? 3 : xs_index;
+                ys_index = (ys_index==0) ? 3 : ys_index;
                 
+                xs_index = xs_index - 1;
+                ys_index = ys_index - 1; 
+
                 double x_s = *(current_position+xs_index);
                 double y_s = *(current_position+ys_index);
                 int n_dir = normal_direction - 1; // Indexing starts at 0
@@ -313,11 +320,16 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
         }
     }
     
+    delete[] current_position;
+
     for (int i=0;i<kDimension;i++) {
         for (int j=0;j<kDimension;j++) {
             *(SingleLayerMatrix+i*kDimension+j) = *(constant_ij+i*kDimension+j) + *(xx_ij+i*kDimension+j);
         }
     }
+
+    delete[] constant_ij;
+    delete[] xx_ij;
 
     return;
 }
