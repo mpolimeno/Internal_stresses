@@ -35,9 +35,6 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
 
     double norm_squared = ComputeEuclideanNorm(evaluation_point,center_of_face);
 
-    std::cout << "Squared Norm is: " << norm_squared << std::endl;
-    std::cout << "\n";
-
     double* constant_ij = new double[kDimension*kDimension];
     double* xx_ij       = new double[kDimension*kDimension];
     for (int i=0;i<kDimension;i++) {
@@ -65,10 +62,6 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
                     int n_dir = normal_direction - 1; // Indexing starts at 0
                     double z_s = *(current_position+n_dir);
 
-                    std::cout << x_s << std::endl;
-                    std::cout << y_s << std::endl;
-                    std::cout << z_s << std::endl;
-
                     double z = 0.;
 
                     // Declaring them here does not seem like a good idea, but for now it is okay
@@ -91,30 +84,59 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
                     } else {
                         if (rint(abs(x_s))!=1 && rint(abs(y_s))!=1) {
                             if (rint(z)==rint(z_s)) {
-                                p1 = (1-y_s)  * log(sqrt((1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s))   + (1-x_s))  + (1-x_s)  * log(sqrt((1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
-                                p2 = (-1-y_s) * log(sqrt((1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) + (1-x_s))  + (1-x_s)  * log(sqrt((1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
-                                p3 = (1-y_s)  * log(sqrt((-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   + (-1-x_s)) + (-1-x_s) * log(sqrt((-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
-                                p4 = (-1-y_s) * log(sqrt((-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) + (-1-x_s)) + (-1-x_s) * log(sqrt((-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
+                                p1 = (1-y_s)  * log(sqrt((1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s))   
+                                   + (1-x_s))  + (1-x_s)  * log(sqrt((1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
+                                
+                                p2 = (-1-y_s) * log(sqrt((1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) 
+                                   + (1-x_s))  + (1-x_s)  * log(sqrt((1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
+                                
+                                p3 = (1-y_s)  * log(sqrt((-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   
+                                   + (-1-x_s)) + (-1-x_s) * log(sqrt((-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
+                                
+                                p4 = (-1-y_s) * log(sqrt((-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) 
+                                   + (-1-x_s)) + (-1-x_s) * log(sqrt((-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
                             } else {
-                                p1 = - (z-z_s)*atan(((1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)    + (1-x_s)*(1-x_s))     + (1-y_s)*(1-y_s)))) 
-                                     + (z-z_s)*atan((1-y_s)/(z-z_s))  
-                                     + (1-y_s)*log((1-x_s)   + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s)))    + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
-                                p2 = - (z-z_s)*atan(((1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)   + (1-x_s)*(1-x_s))     + (-1-y_s)*(-1-y_s)))) 
-                                     + (z-z_s)*atan((-1-y_s)/(z-z_s)) 
-                                     + (-1-y_s)*log((1-x_s)  + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)))  + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
-                                p3 = - (z-z_s)*atan(((-1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)   + (-1-x_s)*(-1-x_s))   + (1-y_s)*(1-y_s))))   
-                                     + (z-z_s)*atan((1-y_s)/(z-z_s))  
-                                     + (1-y_s)*log((-1-x_s)  + sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s)))    + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
-                                p4 = - (z-z_s)*atan(((-1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)  + (-1-x_s)*(-1-x_s))   + (-1-y_s)*(-1-y_s)))) 
-                                     + (z-z_s)*atan((-1-y_s)/(z-z_s)) 
-                                     + (-1-y_s)*log((-1-x_s) + sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)))  + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
+                                p1 = - (z-z_s)*atan(((1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)    + (1-x_s)*(1-x_s))     
+                                     + (1-y_s)*(1-y_s)))) + (z-z_s)*atan((1-y_s)/(z-z_s))  
+                                     + (1-y_s)*log((1-x_s)   + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s)))    
+                                     + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
+                                
+                                p2 = - (z-z_s)*atan(((1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)   + (1-x_s)*(1-x_s))     
+                                     + (-1-y_s)*(-1-y_s)))) + (z-z_s)*atan((-1-y_s)/(z-z_s)) 
+                                     + (-1-y_s)*log((1-x_s)  + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)))  
+                                     + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
+                                
+                                p3 = - (z-z_s)*atan(((-1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)   + (-1-x_s)*(-1-x_s))   
+                                     + (1-y_s)*(1-y_s)))) + (z-z_s)*atan((1-y_s)/(z-z_s))  
+                                     + (1-y_s)*log((-1-x_s)  + sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s)))    
+                                     + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
+                                
+                                p4 = - (z-z_s)*atan(((-1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)  + (-1-x_s)*(-1-x_s))   
+                                     + (-1-y_s)*(-1-y_s)))) + (z-z_s)*atan((-1-y_s)/(z-z_s)) 
+                                     + (-1-y_s)*log((-1-x_s) + sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)))  
+                                     + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
                             }
                         } else {
                             if (rint(z)!=rint(z_s)) {
-                                p1 = -(z-z_s)*atan(((1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)   + (1-x_s)*(1-x_s))   + (1-y_s)*(1-y_s))))   + (z-z_s)*atan((1-y_s)/(z-z_s))  + (1-y_s)*log((1-x_s)   + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s)))   + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
-                                p2 = -(z-z_s)*atan(((1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s))   + (-1-y_s)*(-1-y_s)))) + (z-z_s)*atan((-1-y_s)/(z-z_s)) + (-1-y_s)*log((1-x_s)  + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s))) + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
-                                p3 = -(z-z_s)*atan(((-1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)  + (-1-x_s)*(-1-x_s)) + (1-y_s)*(1-y_s))))   + (z-z_s)*atan((1-y_s)/(z-z_s))  + (1-y_s)*log((-1-x_s)  + sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s)))   + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
-                                p4 = -(z-z_s)*atan(((-1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s)) + (-1-y_s)*(-1-y_s)))) + (z-z_s)*atan((-1-y_s)/(z-z_s)) + (-1-y_s)*log((-1-x_s) + sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s))) + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
+                                p1 = - (z-z_s)*atan(((1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)   + (1-x_s)*(1-x_s))   
+                                     + (1-y_s)*(1-y_s))))   + (z-z_s)*atan((1-y_s)/(z-z_s))  + (1-y_s)*log((1-x_s)   
+                                     + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (1-y_s)*(1-y_s)))   + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  
+                                     + (1-x_s)*(1-x_s)  + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
+                                
+                                p2 = - (z-z_s)*atan(((1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)  + (1-x_s)*(1-x_s))   
+                                     + (-1-y_s)*(-1-y_s)))) + (z-z_s)*atan((-1-y_s)/(z-z_s)) + (-1-y_s)*log((1-x_s)  
+                                     + sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s))) + (1-x_s)*log(sqrt((z-z_s)*(z-z_s)  
+                                     + (1-x_s)*(1-x_s)   + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
+                                
+                                p3 = - (z-z_s)*atan(((-1-x_s)*(1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s)  + (-1-x_s)*(-1-x_s)) 
+                                     + (1-y_s)*(1-y_s))))   + (z-z_s)*atan((1-y_s)/(z-z_s))  + (1-y_s)*log((-1-x_s)  
+                                     + sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s)))   + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) 
+                                     + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s))   + (1-y_s))  -  (1-y_s);
+                                
+                                p4 = - (z-z_s)*atan(((-1-x_s)*(-1-y_s))/((z-z_s)*sqrt(((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s)) 
+                                     + (-1-y_s)*(-1-y_s)))) + (z-z_s)*atan((-1-y_s)/(z-z_s)) + (-1-y_s)*log((-1-x_s) + sqrt((z-z_s)*(z-z_s) 
+                                     + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s))) + (-1-x_s)*log(sqrt((z-z_s)*(z-z_s) 
+                                     + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) + (-1-y_s)) - (-1-y_s);
                             } else {
                                 if (rint(abs(x_s))==1 && rint(abs(y_s))!=1) {
                                     p1 = -((1./2.)*(1-y_s)*(log((1-y_s)*(1-y_s)) - 2));
@@ -208,10 +230,13 @@ void BuildMatrixForSingleLayerPotential(int* center_of_face, int kNumberOfFaces,
                 if (rint(z)!=rint(z_s)) {
                 px1 = - (z-z_s)*atan(((1-x_s)*(1-y_s))/((z-z_s)*sqrt((z-z_s)*(z-z_s) +(1-x_s)*(1-x_s) + (1-y_s)*(1-y_s)))) 
                       + (z-z_s)*atan((1-y_s)/(z-z_s)) + (1-y_s)*(log(sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s) + (1-y_s)*(1-y_s)) +  (1-x_s)) - 1);
+                
                 px2 = - (z-z_s)*atan(((1-x_s)*(-1-y_s))/((z-z_s)*sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s) + (-1-y_s)*(-1-y_s)))) 
                       + (z-z_s)*atan((-1-y_s)/(z-z_s)) + (-1-y_s)*(log(sqrt((z-z_s)*(z-z_s) + (1-x_s)*(1-x_s) + (-1-y_s)*(-1-y_s)) +  (1-x_s)) - 1);
+                
                 px3 = - (z-z_s)*atan(((-1-x_s)*(1-y_s))/((z-z_s)*sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s)))) 
                       + (z-z_s)*atan((1-y_s)/(z-z_s)) + (1-y_s)*(log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (1-y_s)*(1-y_s)) +  (-1-x_s)) - 1);
+                
                 px4 = - (z-z_s)*atan(((-1-x_s)*(-1-y_s))/((z-z_s)*sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)))) 
                       + (z-z_s)*atan((-1-y_s)/(z-z_s)) + (-1-y_s)*(log(sqrt((z-z_s)*(z-z_s) + (-1-x_s)*(-1-x_s) + (-1-y_s)*(-1-y_s)) +  (-1-x_s)) - 1);
                 } else {
