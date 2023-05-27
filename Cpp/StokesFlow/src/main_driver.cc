@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     int kFaceCentersArraySize = kNumberOfFaces*kDimension; 
     int count_face = 0;
     std::ifstream FaceCenters;
-    FaceCenters.open("FaceCenters.txt");
+    FaceCenters.open("../input_files/FaceCenters.txt");
 
     // Read the numbers from the file into the array
     while (count_face<kFaceCentersArraySize && FaceCenters >> *(center_of_face+count_face)) count_face++;
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     // For direction_of_normal array
     int count_direction = 0;
     std::ifstream NormalDirection;
-    NormalDirection.open("NormalDirection.txt");
+    NormalDirection.open("../input_files/NormalDirection.txt");
     
     while (count_direction<kNumberOfFaces && NormalDirection >> *(direction_of_normal+count_direction)) count_direction++;
     NormalDirection.close();
